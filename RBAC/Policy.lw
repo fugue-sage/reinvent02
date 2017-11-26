@@ -1,0 +1,40 @@
+composition
+
+import Fugue.System.Policy as .
+
+default: Account(accountId: "fugue-1511555384692")
+staging: Account(accountId: "staging-1511558804265")
+production: Account(accountId: "production-1511558872031")
+
+alice: User {userId: "alice"}
+bob: User {userId: "bob"}
+charlie: User {userId: "charlie"}
+david: User {userId: "david"}
+
+Process network: AliasedProcess {alias: "network"}
+
+aliceAdmin: accountRules {
+        principals: [alice],
+        accounts: [AllAccounts],
+        actions: allAccountActions}
+
+bobCanRunInStaging: accountRules {
+          principals: [bob],
+          accounts: [staging],
+          actions: [AccountRunProcess,
+            AccountStatusProcess,
+            AccountUpdateProcess,
+            AccountKillProcess]}
+
+bobCanListProduction: accountRules {
+          principals: [bob],
+          accounts: [production],
+          actions: [AccountStatusProcess]}
+
+charlieAcctTable: accountTableRules { principals: [charlie],
+                                    actions: allAccountTableActions }
+
+davidStatusNetwork: Rule {
+          principal: david,
+          subject: ProcessType(network),
+          action: ProcessAction(ProcessGetStatus)}
